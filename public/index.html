@@ -1,0 +1,171 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lagerverwaltung (Lokal)</title>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=TfaKTXB7SmbR968UZDOdZTFRPh4BGQi9gmU3IHl2fP-Qk2v8e7XmE8b28Y_FHQIS5UTBMu0Xa_Sn8pQmvi5xk_HUlK6DEPK5nBM4IlqFPKdQmAFSI5PoG2XfBLbWss0KcFaw3webW4WhuYo9AfjjiREYSGWrLIEayoBrDQmrskrqFmeSXKW7KQ9cjjEWD614yKzIvZ2xno7Zc7MosOsp6hiZMlMvINYOfmQjgEh19negQOAO01XgG0LvSxqCuhG3Pb5Rsox8A3p9EXDqrH0GCg" charset="UTF-8"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="no-print">
+  <h1>Lagerverwaltung</h1>
+  <div class="user">
+    <span id="userBadge" class="badge">Nicht angemeldet</span>
+    <button id="themeToggle" class="btn btn-ghost">Dark Mode</button>
+    <button id="loginBtn" class="btn">Anmelden</button>
+    <button id="logoutBtn" class="btn btn-ghost" style="display:none">Abmelden</button>
+  </div>
+</header>
+
+<div class="toolbar no-print">
+  <input type="text" id="filterInput" placeholder="Suche (Name/Kategorie)">
+  <select id="sortSelect">
+    <option value="name-asc">Name A-Z</option>
+    <option value="name-desc">Name Z-A</option>
+    <option value="stock-desc">Bestand hoch</option>
+    <option value="stock-asc">Bestand niedrig</option>
+    <option value="price-desc">Preis hoch</option>
+    <option value="price-asc">Preis niedrig</option>
+  </select>
+  <button id="statusBtn" class="btn btn-ghost">Status check</button>
+  <span id="syncBadge" class="badge">Sync: lokal</span>
+  <span id="totalItemsBadge" class="badge">Items: 0</span>
+  <span id="totalStockBadge" class="badge">Bestand: 0</span>
+  <span id="totalUsersBadge" class="badge">Benutzer: 0</span>
+  <span class="small">Aktionen nur nach PIN-Login.</span>
+</div>
+
+<div id="adminPanel" class="admin-panel no-print">
+  <div class="row full"><div class="section-title">Items</div></div>
+  <div class="row">
+    <input type="text" id="newItemName" placeholder="Item Name">
+    <input list="categoryList" id="newItemCategory" placeholder="Kategorie">
+    <datalist id="categoryList"></datalist>
+    <input type="number" id="newItemPrice" placeholder="Preis">
+    <input type="number" id="newItemStock" placeholder="Startbestand">
+    <button id="addItemBtn" class="btn">Item hinzufuegen</button>
+  </div>
+
+  <div class="row full"><div class="section-title">Benutzer</div></div>
+  <div class="row">
+    <input type="text" id="newUserName" placeholder="Benutzername">
+    <input type="password" id="newUserPin" placeholder="PIN">
+    <select id="newUserRole">
+      <option value="admin">Admin</option>
+      <option value="manager">Rechte Hand</option>
+      <option value="viewer">Zuschauer</option>
+    </select>
+    <button id="addUserBtn" class="btn">User erstellen</button>
+  </div>
+  <div class="row full">
+    <table class="table-users" id="userTable">
+      <thead><tr><th>Name</th><th>Rolle</th><th>Aktion</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="row full"><div class="section-title">Export / Import</div></div>
+  <div class="row">
+    <button id="exportCsvBtn" class="btn btn-ghost">Items CSV</button>
+    <button id="exportLogsBtn" class="btn btn-ghost">Logs CSV</button>
+    <button id="exportChartsBtn" class="btn btn-ghost">Charts PNG</button>
+    <button id="exportJsonBtn" class="btn btn-ghost">JSON Export</button>
+    <label class="btn btn-ghost" for="importFile">JSON Import</label>
+    <input id="importFile" type="file" accept="application/json" style="display:none">
+    <button id="resetBtn" class="btn btn-danger">Alles loeschen</button>
+  </div>
+
+  <div class="row full"><div class="section-title">Report Einstellungen</div></div>
+  <div class="row">
+    <input type="text" id="reportTitle" placeholder="Report Titel">
+    <label class="check"><input type="checkbox" id="reportItems"> Items</label>
+    <label class="check"><input type="checkbox" id="reportDashboard"> Dashboard</label>
+    <label class="check"><input type="checkbox" id="reportLogs"> Logs</label>
+    <label class="check"><input type="checkbox" id="reportUsers"> Benutzer</label>
+    <label class="check"><input type="checkbox" id="reportCharts"> Charts</label>
+    <label class="check"><input type="checkbox" id="reportLowOnly"> Nur Low-Stock</label>
+    <input type="number" id="reportDays" min="1" max="365" placeholder="Logs Tage">
+    <button id="printReportBtn" class="btn">Report drucken</button>
+  </div>
+</div>
+<div class="container no-print" id="itemGrid"></div>
+
+<div class="panel dashboard no-print" id="dashboardPanel">
+  <h3>Dashboard</h3>
+  <table>
+    <thead><tr><th>Item</th><th>Kategorie</th><th>Bestand</th><th>Preis</th></tr></thead>
+    <tbody id="dashboardBody"></tbody>
+  </table>
+</div>
+
+<div class="panel no-print" id="statsPanel">
+  <h3>Statistik</h3>
+  <div class="charts">
+    <div class="chart-box">
+      <div class="small">Gesamtbestand (Verlauf)</div>
+      <canvas id="stockChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="small">Bestand nach Kategorie</div>
+      <canvas id="categoryChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="panel logs no-print" id="logsPanel">
+  <h3>Logs</h3>
+  <table>
+    <thead><tr><th>Zeit</th><th>Benutzer</th><th>Aktion</th><th>Item</th><th>Delta</th><th>Notiz</th></tr></thead>
+    <tbody id="logsBody"></tbody>
+  </table>
+</div>
+
+<div id="reportView" class="report"></div>
+
+<div id="tooltip" class="tooltip"></div>
+
+<div id="loginOverlay" class="overlay no-print">
+  <div class="modal">
+    <h2>Login</h2>
+    <div class="row">
+      <label class="small">Benutzer</label>
+      <select id="loginUser"></select>
+    </div>
+    <div class="row">
+      <label class="small">PIN</label>
+      <input type="password" id="loginPin" placeholder="PIN">
+    </div>
+    <div class="actions">
+      <button id="loginConfirm" class="btn">Anmelden</button>
+      <button id="loginCancel" class="btn btn-ghost">Schliessen</button>
+    </div>
+  </div>
+</div>
+
+<div id="setupOverlay" class="overlay no-print">
+  <div class="modal">
+    <h2>Admin anlegen</h2>
+    <div class="row">
+      <label class="small">Admin Name</label>
+      <input type="text" id="setupName" placeholder="Name">
+    </div>
+    <div class="row">
+      <label class="small">PIN</label>
+      <input type="password" id="setupPin" placeholder="PIN (mind. 4)">
+    </div>
+    <div class="row">
+      <label class="small">PIN wiederholen</label>
+      <input type="password" id="setupPin2" placeholder="PIN wiederholen">
+    </div>
+    <div class="actions">
+      <button id="setupConfirm" class="btn">Erstellen</button>
+      <button id="setupSkip" class="btn btn-ghost">Nur ansehen</button>
+    </div>
+    <div class="small">Ohne Admin kannst du nur ansehen und keine Aenderungen machen.</div>
+  </div>
+</div>
+<script src="app.js" defer></script>
+</body>
+</html>
+
