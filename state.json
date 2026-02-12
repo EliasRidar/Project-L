@@ -6,73 +6,11 @@
     "Materialien"
   ],
   "history": {},
-  "users": [
-    {
-      "id": "177085554991117630627135390287",
-      "name": "B.Cortez",
-      "role": "admin",
-      "salt": "151a1ad0fa60f5b6e6b46b3de819360a",
-      "hash": "642b1b64"
-    }
-  ],
-  "logs": [
-    {
-      "t": 1770855549911,
-      "user": "System",
-      "action": "user_add",
-      "item": "",
-      "category": "",
-      "delta": 0,
-      "note": "Admin erstellt: B.Cortez"
-    },
-    {
-      "t": 1770855598232,
-      "user": "B.Cortez",
-      "action": "item_add",
-      "item": "Metall",
-      "category": "Materialien",
-      "delta": 0,
-      "note": "Item erstellt"
-    },
-    {
-      "t": 1770855718425,
-      "user": "B.Cortez",
-      "action": "einlagern",
-      "item": "Metall",
-      "category": "Materialien",
-      "delta": 15,
-      "note": ""
-    },
-    {
-      "t": 1770855756233,
-      "user": "B.Cortez",
-      "action": "item_remove",
-      "item": "Metall",
-      "category": "Materialien",
-      "delta": 0,
-      "note": "Item entfernt"
-    }
-  ],
-  "stats": [
-    {
-      "t": 1770855571028,
-      "total": 0
-    },
-    {
-      "t": 1770855598233,
-      "total": 0
-    },
-    {
-      "t": 1770855718426,
-      "total": 15
-    },
-    {
-      "t": 1770855756234,
-      "total": 0
-    }
-  ],
+  "users": [],
+  "logs": [],
+  "stats": [],
   "settings": {
-    "lastUserId": "177085554991117630627135390287",
+    "lastUserId": "",
     "report": {
       "title": "Lagerbericht",
       "includeItems": true,
@@ -84,11 +22,11 @@
       "logDays": 30
     },
     "webhooks": {
-      "liveMessageId": "1471299256777183272"
+      "liveMessageId": "1471302397681729781"
     }
   },
   "meta": {
-    "updatedAt": 1770855756234,
+    "updatedAt": 1770856276428,
     "updatedBy": "177085456635117583435525787927"
   }
 }
