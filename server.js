@@ -221,5 +221,9 @@ app.get("/export",auth,(req,res)=>{
     });
 });
 
-const PORT = process.env.PORT || 25565;
-server.listen(PORT, ()=>console.log(`Server läuft auf http://192.168.178.28:${PORT}`));
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server läuft auf Port ${PORT}`);
+});
+
